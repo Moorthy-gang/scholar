@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBSE ScholarLM Pro - Developer Edition</title>
+    <!-- Tailwind CSS for sleek layout -->
+    <script src="https://tailwindcss.com"></script>
+    <style>
+        @import url('https://googleapis.com');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hidden-panel { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- OVERLAY STAGE 1: SYSTEM GATE (AUTH / DEV CREDENTIALS) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-md w-full shadow-2xl transform transition-all">
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-indigo-600/10 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-indigo-500/20">
+                    <svg xmlns="http://w3.org" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <h1 class="text-xl font-bold text-white">Sign In to CBSE ScholarLM</h1>
+                <p class="text-slate-400 text-xs mt-1">Access India's tailored NCERT curriculum portal.</p>
+            </div>
+
+            <!-- Federated Logins -->
+            <div class="space-y-2 mb-6">
+                <button onclick="handleSocialAuth('Google')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition-all">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.93 1 12 1 7.24 1 3.23 3.73 1.3 7.72l3.86 3A7.02 7.02 0 0 1 12 5.04z"/><path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.44a5.52 5.52 0 0 1-2.4 3.63v3.02h3.87c2.26-2.08 3.58-5.15 3.58-8.74z"/><path fill="#FBBC05" d="M5.16 14.72A7.03 7.03 0 0 1 4.75 12c0-.95.16-1.87.44-2.72L1.3 6.28A11.94 11.94 0 0 0 0 12c0 2.05.52 4 1.43 5.72l3.73-3z"/><path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.92l-3.87-3.02c-1.08.72-2.46 1.16-4.09 1.16-3.15 0-5.82-2.13-6.77-5.01l-3.86 3A11.95 11.95 0 0 0 12 23z"/></svg>
+                    <span>Continue with Google</span>
+                </button>
+                <button onclick="handleSocialAuth('Microsoft')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition-all">
+                    <svg class="h-4 w-4" viewBox="0 0 23 23"><path fill="#f35325" d="M0 0h11v11H0z"/><path fill="#81bc06" d="M12 0h11v11H12z"/><path fill="#05a6f0" d="M0 12h11v11H0z"/><path fill="#ffba08" d="M12 12h11v11H12z"/></svg>
+                    <span>Continue with Microsoft</span>
+                </button>
+                <button onclick="handleSocialAuth('Facebook')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition-all">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/></svg>
+                    <span>Continue with Facebook</span>
+                </button>
+            </div>
+
+            <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-slate-800"></div>
+                <span class="flex-shrink mx-4 text-slate-500 font-bold uppercase tracking-widest text-[9px]">Developer Core Gate</span>
+                <div class="flex-grow border-t border-slate-800"></div>
+            </div>
+
+            <!-- Creator Custom Bypass Block -->
+            <div class="mt-4 space-y-2.5">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Username</label>
+                    <input id="dev-user" type="text" placeholder="Developer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 placeholder-slate-700">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Password</label>
+                    <input id="dev-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 placeholder-slate-700">
+                </div>
+                <button onclick="handleDevBypass()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-xl text-xs transition-all shadow mt-2">
+                    Developer Bypass Login
+                </button>
+                <div id="auth-error" class="text-rose-400 text-[11px] text-center hidden font-medium">Invalid developer credentials provided.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY STAGE 2: SUBJECT STREAM PICKER -->
+    <div id="stream-modal" class="fixed inset-0 z-40 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 hidden-panel">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-md w-full shadow-2xl text-center">
+            <h1 class="text-2xl font-bold text-white mb-1">Select CBSE Course Group</h1>
+            <p class="text-slate-400 text-xs mb-6">Filter your dashboard view down to relevant senior subjects.</p>
+            
+            <div class="space-y-2">
+                <button onclick="selectStream('PCM')" class="w-full bg-slate-800 hover:bg-indigo-600/20 border border-slate-700 hover:border-indigo-500 py-3 px-4 rounded-xl text-left font-semibold flex justify-between items-center transition-all group">
+                    <span>PCM <span class="text-xs text-slate-400 block font-normal">Physics, Chemistry, Mathematics</span></span>
+                    <span class="text-xs font-bold uppercase tracking-wider bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800">Select</span>
+                </button>
+                <button onclick="selectStream('PCB')" class="w-full bg-slate-800 hover:bg-emerald-600/20 border border-slate-700 hover:border-emerald-500 py-3 px-4 rounded-xl text-left font-semibold flex justify-between items-center transition-all group">
+                    <span>PCB <span class="text-xs text-slate-400 block font-normal">Physics, Chemistry, Biology</span></span>
+                    <span class="text-xs font-bold uppercase tracking-wider bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800">Select</span>
+                </button>
+                <button onclick="selectStream('Commerce')" class="w-full bg-slate-800 hover:bg-amber-600/20 border border-slate-700 hover:border-amber-500 py-3 px-4 rounded-xl text-left font-semibold flex justify-between items-center transition-all group">
+                    <span>Commerce <span class="text-xs text-slate-400 block font-normal">Accountancy, Business Studies, Economics</span></span>
+                    <span class="text-xs font-bold uppercase tracking-wider bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800">Select</span>
+                </button>
+                <button onclick="selectStream('Humanities')" class="w-full bg-slate-800 hover:bg-purple-600/20 border border-slate-700 hover:border-purple-500 py-3 px-4 rounded-xl text-left font-semibold flex justify-between items-center transition-all group">
+                    <span>Humanities <span class="text-xs text-slate-400 block font-normal">History, Political Science, Geography</span></span>
+                    <span class="text-xs font-bold uppercase tracking-wider bg-slate-950 px-2 py-1 rounded text-slate-400 border border-slate-800">Select</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP STRUCTURE -->
+    <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold tracking-wider shadow">S</div>
+            <div>
+                <h2 class="text-base font-bold text-white tracking-wide leading-none">ScholarLM Pro</h2>
+                <span id="active-stream-badge" class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-1 inline-block">Initialising system...</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 max-w-xs">
+                <span class="text-xs text-slate-400 font-medium mr-2 whitespace-nowrap">Gemini Key:</span>
+                <input id="api-key-input" type="password" placeholder="Paste free key..." class="bg-transparent text-xs text-white focus:outline-none w-32 placeholder-slate-600">
+            </div>
+            <button onclick="systemSignOut()" class="text-xs text-slate-400 hover:text-rose-400 font-medium transition-colors border border-slate-800 hover:border-rose-900/30 px-3 py-1.5 rounded-lg bg-slate-900">Sign Out</button>
+        </div>
